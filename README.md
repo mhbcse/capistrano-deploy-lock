@@ -27,18 +27,34 @@ Require in `Capfile` to use the default task:
 require 'capistrano/deploy-lock'
 ```
 
-Deploy with custom lock:
+Deploy with default configuration:
+Just run normal capistrano command, deploy lock will work automatically. 
+    $ cap production deploy
+    
+You will get the following tasks
 
-    $ cap production deploy:with_lock
+```ruby
+cap production deploy:with_lock         # Deploy with custom lock
+cap production deploy:lock              # Lock manually (without deploy)
+cap production deploy:unlock            # Unlock manually
+cap production deploy:unlock:force      # Unlock forcefully
+```
+    
+Configurable options (copy into deploy.rb), shown here with examples:
 
-Manually Lock (without deploy):
-  
-    $ cap production deploy:lock
+```ruby
+# Deploy Lock File
+# default value: File.join(shared_path, "deploy-lock.yml")
+set :deploy_lock_file, -> { File.join(shared_path, "deploy-lock.yml") }
 
-Manually Unlock (if necessary):
+# Deploy Lock Roles
+# default value: :app
+set :deploy_lock_roles, -> { :app }
 
-    $ cap production deploy:unlock
-
+# Deploy lock expiry (in second)
+# Default 15 minutes
+set :default_lock_expiry, (15 * 60)
+```
 
 ## Contributing
 
