@@ -28,7 +28,9 @@ require 'capistrano/deploy-lock'
 ```
 
 Deploy with default configuration:
+
 Just run normal capistrano command, deploy lock will work automatically. 
+    
     $ cap production deploy
     
 You will get the following tasks
