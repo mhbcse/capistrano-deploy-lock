@@ -17,6 +17,7 @@ namespace :deploy do
   task :lock do
     set :custom_deploy_lock, true
     set :lock_message, ask('lock message', '', echo: true)
+    puts "Lock message: #{fetch(:lock_message)}"
 
     while fetch(:lock_expiry).nil?
       set :expire_after, ask('minutes of expiry', 'optional', echo: true) 
