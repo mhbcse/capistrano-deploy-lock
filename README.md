@@ -1,4 +1,4 @@
-# Capistrano Deploy Lock 1.0.2
+# Capistrano Deploy Lock 1.0.3
 
 Deploy lock feature for Capistrano 3.4.x
 
