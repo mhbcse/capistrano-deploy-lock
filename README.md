@@ -1,4 +1,4 @@
-# Capistrano Deploy Lock 1.0.1
+# Capistrano Deploy Lock 1.0.2
 
 Deploy lock feature for Capistrano 3.4.x
 
@@ -50,7 +50,7 @@ Configurable options (copy into deploy.rb), shown here with examples:
 set :deploy_lock_file, -> { File.join(shared_path, "deploy-lock.yml") }
 
 # Deploy Lock Roles
-# default value: :app
+# default value: :app ; use array for multiple roles
 set :deploy_lock_roles, -> { :app }
 
 # Deploy lock expiry (in second)

@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "capistrano-deploy-lock"
-  spec.version       = "1.0.1"
+  spec.version       = "1.0.2"
   spec.author        = "Maruf Hasan Bulbul"
   spec.email         = "mhb.cse@gmail.com"
   spec.summary       = %q{Deploy lock feature for Capistrano 3.4.x}
