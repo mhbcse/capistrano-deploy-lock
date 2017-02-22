@@ -122,18 +122,10 @@ namespace :deploy do
     end
   end
   
-  before 'deploy:started', 'check_lock' do
-    invoke 'deploy:check_lock'
-  end
-  before 'deploy:started', 'create_lock' do
-    invoke 'deploy:create_lock'
-  end
-  after 'deploy:published', 'unlock' do
-    invoke 'deploy:unlock:default'
-  end
-  after 'deploy:rollback', 'unlock' do
-    invoke 'deploy:unlock:default'
-  end
+  before 'deploy:started',   'check_lock'
+  before 'deploy:started',   'create_lock'
+  after  'deploy:published', 'unlock:default'
+  after  'deploy:rollback',  'unlock:default'
 
 end
 
