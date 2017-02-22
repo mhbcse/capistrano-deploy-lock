@@ -1,4 +1,4 @@
-set :deploy_lock_file, -> { File.join(shared_path, "deploy-lock.yml") }
+set :deploy_lock_file, -> { File.join(shared_path, 'deploy-lock.yml') }
 set :deploy_lock_roles, -> { :app }
 set :default_lock_expiry, (15 * 60)
 set :deploy_lock, false
@@ -6,27 +6,27 @@ set :lock_message, nil
 set :lock_expiry, nil
 
 namespace :deploy do
-  
-  desc "Deploy with a custom deploy lock"
+
+  desc 'Deploy with a custom deploy lock'
   task :with_lock do
     invoke 'deploy:lock'
     invoke 'deploy'
   end
-  
-  desc "Set deploy lock with a custom lock message and expiry time"
+
+  desc 'Set deploy lock with a custom lock message and expiry time'
   task :lock do
     set :custom_deploy_lock, true
     set :lock_message, ask('lock message', '', echo: true)
     puts "Lock message: #{fetch(:lock_message)}"
 
     while fetch(:lock_expiry).nil?
-      set :expire_after, ask('minutes of expiry', 'optional', echo: true) 
+      set :expire_after, ask('minutes of expiry', 'optional', echo: true)
       expire_after = fetch(:expire_after)
-          
-      if expire_after == "optional"
+
+      if expire_after == 'optional'
         # Never expire an explicit lock if no time given
         set :lock_expiry, false
-        puts colorize("Lock will never expire automatically.", color: 33)
+        puts colorize('Lock will never expire automatically.', color: 33)
       else
         unless expire_after.to_i == 0
           set :lock_expiry, (Time.now + expire_after.to_i * 60).utc
@@ -36,11 +36,11 @@ namespace :deploy do
         end
       end
     end
- 
+
     invoke 'deploy:create_lock'
   end
-  
-  desc "Creates a lock file, so that futher deploys will be prevented"
+
+  desc 'Creates a lock file, so that futher deploys will be prevented'
   task :create_lock do
     if fetch(:deploy_lock)
       puts colorize('Deploy lock already created.', color: 33)
@@ -50,7 +50,7 @@ namespace :deploy do
     if fetch(:lock_message).nil?
       set :lock_message, "Deploying #{fetch(:branch)} branch in #{fetch(:rails_env)}"
     end
-        
+
     if fetch(:lock_expiry).nil?
       set :lock_expiry, (Time.now + fetch(:default_lock_expiry)).utc
     end
@@ -62,24 +62,24 @@ namespace :deploy do
       message: fetch(:lock_message).to_s,
       custom: !!fetch(:custom_deploy_lock)
     }
-        
+
     write_deploy_lock(deploy_lock_data)
-    
+
     set :deploy_lock, deploy_lock_data
   end
-  
-  desc "Checks for a deploy lock. If present, deploy is aborted and message is displayed. Any expired locks are deleted."
+
+  desc 'Checks for a deploy lock. If present, deploy is aborted and message is displayed. Any expired locks are deleted.'
   task :check_lock do
     # Don't check the lock if we just created it
     next if fetch(:deploy_lock)
 
     fetch_deploy_lock
-        
+
     # Return if no lock
     next unless fetch(:deploy_lock)
 
     deploy_lock = fetch(:deploy_lock)
-        
+
     if deploy_lock[:expire_at] && deploy_lock[:expire_at] < Time.now
       remove_deploy_lock
       next
@@ -103,29 +103,30 @@ namespace :deploy do
       exit 1
     end
   end
-  
+
   namespace :unlock do
-    desc "Unlocks the server for deployment"
+    desc 'Unlocks the server for deployment'
     task :default do
       # Don't automatically remove custom deploy locks created by deploy:lock task
       if fetch(:custom_deploy_lock)
         puts colorize('Not removing custom deploy lock.', color: 33)
       else
         remove_deploy_lock
-        puts colorize("Deploy unlocked.", color: 32)
+        puts colorize('Deploy unlocked.', color: 32)
       end
     end
 
     task :force do
       remove_deploy_lock
-      puts colorize("Deploy unlocked.", color: 32)
+      puts colorize('Deploy unlocked.', color: 32)
     end
   end
-  
-  before 'deploy:started',   'check_lock'
-  before 'deploy:started',   'create_lock'
-  after  'deploy:published', 'unlock:default'
-  after  'deploy:rollback',  'unlock:default'
+
+  before 'deploy:started', 'check_lock'
+  before 'deploy:started', 'create_lock'
+  after 'deploy:published', 'unlock:default'
+  after 'deploy:rollback', 'unlock:default'
+  after 'deploy:failed', 'unlock:default'
 
 end
 
@@ -136,7 +137,7 @@ def fetch_deploy_lock
 
   unless fetch(:deploy_lock)
     # Check all matching servers for a deploy lock.
-    on roles(fetch(:deploy_lock_roles)).to_a, in: :parallel do |host|
+    on roles(fetch(:deploy_lock_roles)), in: :parallel do |host|
       if test("[ -f #{fetch(:deploy_lock_file)} ]")
         output = capture "cat #{fetch(:deploy_lock_file)}"
         set :deploy_lock, YAML.load(output)
@@ -156,7 +157,7 @@ end
 
 def remove_deploy_lock
   on roles(fetch(:deploy_lock_roles)), in: :parallel do |host|
-    execute :rm, "-f", fetch(:deploy_lock_file)
+    execute :rm, '-f', fetch(:deploy_lock_file)
   end
   set :deploy_lock, nil
   set :deploy_lock_removed, true
@@ -172,7 +173,7 @@ def message(application, stage, deploy_lock)
   else
     message << "\n\e[0;33mLock must be manually removed with: cap #{stage} deploy:unlock\e[0m"
   end
-  
+
   colorize(message)
 end
 
