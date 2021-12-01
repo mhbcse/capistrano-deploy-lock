@@ -64,7 +64,7 @@ set :enable_deploy_lock_local, true
 set :local_lock_path, '.' # working directory
 
 # This is where the lock file will be created locally
-set :deploy_lock_file_local, -> { File.join(fetch(:local_lock_path), 'deploy-lock.yml') }
+set :deploy_lock_file_local, -> { File.join(fetch(:local_lock_path), "#{fetch(:rails_env)}-#{fetch(:stage)}-deploy-lock.yml") }
 ```
 
 ## Contributing
