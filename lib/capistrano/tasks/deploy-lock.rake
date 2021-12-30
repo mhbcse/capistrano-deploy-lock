@@ -162,6 +162,7 @@ def write_deploy_lock(deploy_lock)
   end
 
   if fetch(:enable_deploy_lock_local)
+    Dir.mkdir(shared_path)
     File.write(fetch(:deploy_lock_file_local), deploy_lock.to_yaml)
   end
 end
