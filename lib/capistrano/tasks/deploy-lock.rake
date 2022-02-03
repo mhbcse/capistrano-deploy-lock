@@ -4,6 +4,9 @@ set :default_lock_expiry, (15 * 60)
 set :deploy_lock, false
 set :lock_message, nil
 set :lock_expiry, nil
+set :enable_deploy_lock_local, true
+set :local_lock_path, '.' # working directory
+set :deploy_lock_file_local, -> { File.join(fetch(:local_lock_path), "#{fetch(:rails_env)}-#{fetch(:stage)}-deploy-lock.yml") }
 
 namespace :deploy do
 
@@ -48,7 +51,11 @@ namespace :deploy do
     end
 
     if fetch(:lock_message).nil?
-      set :lock_message, "Deploying #{fetch(:branch)} branch in #{fetch(:rails_env)}"
+      if fetch(:enable_deploy_lock_local)
+        set :lock_message, "Deploying #{fetch(:branch)} branch in #{fetch(:rails_env)} and on local"
+      else
+        set :lock_message, "Deploying #{fetch(:branch)} branch in #{fetch(:rails_env)}"
+      end
     end
 
     if fetch(:lock_expiry).nil?
@@ -153,12 +160,18 @@ def write_deploy_lock(deploy_lock)
   on roles(fetch(:deploy_lock_roles)), in: :parallel do |host|
     upload! StringIO.new(deploy_lock.to_yaml), fetch(:deploy_lock_file)
   end
+
+  if fetch(:enable_deploy_lock_local)
+    File.write(fetch(:deploy_lock_file_local), deploy_lock.to_yaml)
+  end
 end
 
 def remove_deploy_lock
   on roles(fetch(:deploy_lock_roles)), in: :parallel do |host|
     execute :rm, '-f', fetch(:deploy_lock_file)
   end
+  File.delete(fetch(:deploy_lock_file_local)) if File.exist?(fetch(:deploy_lock_file_local))
+
   set :deploy_lock, nil
   set :deploy_lock_removed, true
 end

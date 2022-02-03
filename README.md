@@ -56,6 +56,15 @@ set :deploy_lock_roles, -> { :app }
 # Deploy lock expiry (in second)
 # Default 15 minutes
 set :default_lock_expiry, (15 * 60)
+
+# Lock multiple deploys from local machine as well
+set :enable_deploy_lock_local, true
+
+# Create the lock file in the current working directory
+set :local_lock_path, '.' # working directory
+
+# This is where the lock file will be created locally
+set :deploy_lock_file_local, -> { File.join(fetch(:local_lock_path), "#{fetch(:rails_env)}-#{fetch(:stage)}-deploy-lock.yml") }
 ```
 
 ## Contributing
